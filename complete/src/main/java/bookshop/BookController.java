@@ -1,5 +1,6 @@
 package bookshop;
 
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -45,7 +46,7 @@ public class BookController {
     }
 
     // ----- Get book by id -----
-    @RequestMapping(value="/book/{id}", method=GET)
+    @RequestMapping(value="/books/{id}", method=GET)
     public Book getBook(@PathVariable("id") long id) {
         for (Book item: list) {
             if (item.getId() == id) {
@@ -57,7 +58,7 @@ public class BookController {
     }
 
     // ----- Create new book -----
-    @RequestMapping(value="/book", method=POST)
+    @RequestMapping(value="/books", method=POST)
     @ResponseBody
     public Book createBook(@RequestBody Book book) {
 
@@ -72,14 +73,14 @@ public class BookController {
     }
 
     // ----- Update book by id -----
-    @RequestMapping(value="/book", method=PUT)
+    @RequestMapping(value="/books/{id}", method=PUT)
     @ResponseBody
-    public Book updateBook(@RequestBody Book book) {
+    public Book updateBook(@PathVariable("id") long id, @RequestBody Book book) {
 
         //Find book
         int index = -1;
         for(int i = 0; i < list.size(); i++) {
-            if (list.get(i).getId() == book.getId()) {
+            if (list.get(i).getId() == id) {
                 index = i;
             }
         }
@@ -88,6 +89,26 @@ public class BookController {
         if (index >= 0) {
             list.set(index, book);
             return book;
+        } else {
+            throw new NotFoundException();
+        }
+    }
+
+    // ----- Delete book by id -----
+    @RequestMapping(value="/books/{id}", method=DELETE)
+    public void updateBook(@PathVariable("id") long id) {
+
+        //Find book
+        int index = -1;
+        for(int i = 0; i < list.size(); i++) {
+            if (list.get(i).getId() == id) {
+                index = i;
+            }
+        }
+
+        //update book
+        if (index >= 0) {
+            list.remove(index);
         } else {
             throw new NotFoundException();
         }
